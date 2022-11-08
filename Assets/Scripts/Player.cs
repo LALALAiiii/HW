@@ -9,11 +9,13 @@ public class Player : MonoBehaviour
     public Joystick joyStick;
     public Transform firePoint;
     public GameObject bulletPrefab;
+    public static bool haveEnemy = false;
 
     private CharacterController controller;
 
     private GameObject focusEnemy;
     private bool Moving;
+    
 
     void Start()
     {
@@ -28,9 +30,10 @@ public class Player : MonoBehaviour
     {
         // 找到最近的一個目標 Enemy 的物件
         GameObject[] enemys = GameObject.FindGameObjectsWithTag("Enemy");
-        if (enemys.Length == 0)
+        if (enemys.Length == 0 && haveEnemy == true)
         {
             SceneManager.LoadScene("Level2");
+            haveEnemy = false;
         }
         float miniDist = 9999;
         foreach (GameObject enemy in enemys)
@@ -43,6 +46,7 @@ public class Player : MonoBehaviour
             {
                 miniDist = d;
                 focusEnemy = enemy;
+                haveEnemy = true;
             }
             
         }
@@ -119,6 +123,25 @@ public class Player : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        
+        if (other.gameObject.tag == "Coin")
+        {
+            
+            other.gameObject.SetActive(false);
+            Destroy(other.gameObject);
 
-   
+
+            
+            GameObject[] objs = GameObject.FindGameObjectsWithTag("Coin");
+
+            
+            if (objs.Length == 0)
+            {
+                
+                SceneManager.LoadScene("End");
+            }
+        }
+    }
 }
